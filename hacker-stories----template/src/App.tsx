@@ -10,7 +10,18 @@ type Story = {
 };
 
 
+const useStorageState = (key:string, initialState:string) => {
+  
+  const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+    }, [value, key]);
+
+    return[value, setValue] as const;
+
+}
 
 
 const App = () => {
@@ -33,18 +44,13 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState(
-    localStorage.getItem("search") || "React"
-  );
+  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 //solution to side effect of laclaclstorage update
-  React.useEffect(() => {
-    localStorage.setItem('search', searchTerm);
-    }, [searchTerm]);
+  
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    // reduce future bug due to side-effect
-    localStorage.setItem("search", event.target.value);
+    
   };
 
   const searchedStories = stories.filter((story) =>
