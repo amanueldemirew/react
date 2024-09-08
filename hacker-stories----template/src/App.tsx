@@ -9,6 +9,10 @@ type Story = {
   points: number;
 };
 
+
+
+
+
 const App = () => {
   const stories = [
     {
@@ -29,10 +33,18 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState("React");
+  const [searchTerm, setSearchTerm] = React.useState(
+    localStorage.getItem("search") || "React"
+  );
+//solution to side effect of laclaclstorage update
+  React.useEffect(() => {
+    localStorage.setItem('search', searchTerm);
+    }, [searchTerm]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    // reduce future bug due to side-effect
+    localStorage.setItem("search", event.target.value);
   };
 
   const searchedStories = stories.filter((story) =>
@@ -70,28 +82,24 @@ type ListProps = {
 
 const List = ({ list }: ListProps) => (
   <ul>
-    {list.map(({objectID, ...item}) => (
-      <Item key={objectID} {...item} />
+    {list.map((item) => (
+      <Item key={item.objectID} item={item} />
     ))}
   </ul>
 );
 
 type ItemProps = {
-  title: string;
-  url: string;
-  author: string;
-  num_comments: number;
-  points: number;
+  item: Story;
 };
 
-const Item = ({ title, url, author, num_comments, points }: ItemProps) => (
+const Item = ({ item }: ItemProps) => (
   <li>
     <span>
-      <a href={url}>{title}</a>
+      <a href={item.url}>{item.title}</a>
     </span>
-    <span>{author}</span>
-    <span>{num_comments}</span>
-    <span>{points}</span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
   </li>
 );
 
