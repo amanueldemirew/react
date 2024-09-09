@@ -9,20 +9,17 @@ type Story = {
   points: number;
 };
 
-
-const useStorageState = (key:string, initialState:string) => {
-  
-  const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
-
+const useStorageState = (key: string, initialState: string) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
 
   React.useEffect(() => {
     localStorage.setItem(key, value);
-    }, [value, key]);
+  }, [value, key]);
 
-    return[value, setValue] as const;
-
-}
-
+  return [value, setValue] as const;
+};
 
 const App = () => {
   const stories = [
@@ -44,13 +41,11 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
-//solution to side effect of laclaclstorage update
-  
+  const [searchTerm, setSearchTerm] = useStorageState("search", "React");
+  //solution to side effect of laclaclstorage update
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    
   };
 
   const searchedStories = stories.filter((story) =>
@@ -61,7 +56,12 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      />
 
       <hr />
 
@@ -70,15 +70,25 @@ const App = () => {
   );
 };
 
-type SearchProps = {
-  search: string;
-  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+type InputWithLabelProps = {
+  id: string;
+  label: string;
+  value: string;
+  type?:string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Search = ({ search, onSearch }: SearchProps) => (
+const InputWithLabel = ({
+  id,
+  label,
+  value,
+  type = 'text',
+  onInputChange,
+
+}: InputWithLabelProps) => (
   <>
-    <label htmlFor="search">Search: </label>
-    <input id="search" type="text" value={search} onChange={onSearch} />
+    <label htmlFor={id}>{label}: </label> &nbsp;
+    <input id={id} type={type} value={value} onChange={onInputChange} />
   </>
 );
 
