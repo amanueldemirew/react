@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 type Story = {
   objectID: number;
@@ -11,22 +11,27 @@ type Story = {
 
 const initialStories = [
   {
-    title: 'React',
-    url: 'https://reactjs.org/',
-    author: 'Jordan Walke',
+    title: "React",
+    url: "https://reactjs.org/",
+    author: "Jordan Walke",
     num_comments: 3,
     points: 4,
     objectID: 0,
   },
   {
-    title: 'Redux',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
+    title: "Redux",
+    url: "https://redux.js.org/",
+    author: "Dan Abramov, Andrew Clark",
     num_comments: 2,
     points: 5,
     objectID: 1,
   },
 ];
+
+const getAsyncStories = (): Promise<{ data: { stories: Story[] } }> =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
+  );
 
 const useStorageState = (key: string, initialState: string) => {
   const [value, setValue] = React.useState(
@@ -41,12 +46,15 @@ const useStorageState = (key: string, initialState: string) => {
 };
 
 const App = () => {
-  const [searchTerm, setSearchTerm] = useStorageState(
-    'search',
-    'React'
-  );
+  const [searchTerm, setSearchTerm] = useStorageState("search", "React");
 
-  const [stories, setStories] = React.useState(initialStories);
+  const [stories, setStories] = React.useState<Story[]>([]);
+
+  React.useEffect(() => {
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   const handleRemoveStory = (item: Story) => {
     const newStories = stories.filter(
@@ -56,9 +64,7 @@ const App = () => {
     setStories(newStories);
   };
 
-  const handleSearch = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
@@ -98,7 +104,7 @@ type InputWithLabelProps = {
 const InputWithLabel = ({
   id,
   value,
-  type = 'text',
+  type = "text",
   onInputChange,
   isFocused,
   children,
@@ -134,11 +140,7 @@ type ListProps = {
 const List = ({ list, onRemoveItem }: ListProps) => (
   <ul>
     {list.map((item) => (
-      <Item
-        key={item.objectID}
-        item={item}
-        onRemoveItem={onRemoveItem}
-      />
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
     ))}
   </ul>
 );
